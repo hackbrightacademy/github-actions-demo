@@ -1,33 +1,34 @@
-name: Run .NET Tests
-run-name: Running .NET tests for pull request ${{ github.event.number }}
+name: Run Tests
+run-name: Running tests for ${{ github.event_name }} on ${{ github.ref_name }}
 
 on:
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
     branches:
       - main
-    paths:
-      - 'DotnetApp/**'
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
-     runs-on: ubuntu-latest
+  test_dotnet:
+    # This condition checks if the commit includes changes in the DotnetApp directory.
+    # It's probably overkill in most cases, but this demo might include other kinds
+    # of projects so this ensures we only run the tests if the DotnetApp project is modified.
+    if: contains(github.event.head_commit.modified, 'DotnetApp')
+    runs-on: ubuntu-latest
 
-     steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore dependencies
-        working-directory: DotnetApp
-        run: dotnet restore
-      - name: Run build
-        working-directory: DotnetApp
-        run: dotnet build --no-restore
-      - name: Run tests
-        working-directory: DotnetApp
-        run: dotnet test --no-build --verbosity normal
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      working-directory: DotnetApp
+      run: dotnet restore
+    - name: Run build
+      working-directory: DotnetApp
+      run: dotnet build --no-restore
+    - name: Run tests
+      working-directory: DotnetApp
+      run: dotnet test --no-build --verbosity normal
