@@ -1,0 +1,33 @@
+name: Run .NET Tests
+run-name: Running .NET tests for pull request ${{ github.event.number }}
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
+    paths:
+      - 'DotnetApp/**'
+
+jobs:
+  test:
+     runs-on: ubuntu-latest
+
+     steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        working-directory: DotnetApp
+        run: dotnet restore
+      - name: Run build
+        working-directory: DotnetApp
+        run: dotnet build --no-restore
+      - name: Run tests
+        working-directory: DotnetApp
+        run: dotnet test --no-build --verbosity normal
