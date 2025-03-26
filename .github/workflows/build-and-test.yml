@@ -30,8 +30,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - run: |
-          echo 'Initiating build and test for .NET v${{ steps.setup-dotnet.outputs.dotnet-version }}'
+      - name: Initiating build and test with .NET v${{ steps.setup-dotnet.outputs.dotnet-version }}
+        run: |
+          echo 'Initiating build and test with .NET v${{ steps.setup-dotnet.outputs.dotnet-version }}'
 
       - name: Restore dependencies
         working-directory: DotnetApp
