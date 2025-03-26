@@ -5,30 +5,38 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
+  merge_group:
+    types:
+      - checks_requested
 
 jobs:
   test_dotnet:
-    # This condition checks if the commit includes changes in the DotnetApp directory.
-    # It's probably overkill in most cases, but this demo might include other kinds
-    # of projects so this ensures we only run the tests if the DotnetApp project is modified.
-    if: contains(github.event.head_commit.modified, 'DotnetApp')
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      working-directory: DotnetApp
-      run: dotnet restore
-    - name: Run build
-      working-directory: DotnetApp
-      run: dotnet build --no-restore
-    - name: Run tests
-      working-directory: DotnetApp
-      run: dotnet test --no-build --verbosity normal
+      - uses: actions/checkout@v4
+
+      # This checks if the commit includes changes in the DotnetApp directory.
+      # It's probably overkill in most cases, but this demo might include other kinds
+      # of projects so this ensures we only run the tests if the DotnetApp project is modified.
+      - name: Get changed files
+        uses: tj-actions/changed-files@v46.0.3
+        id: changed-files
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        if: contains(steps.changed-files.outputs.all_changed_files, 'DotnetApp/')
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        working-directory: DotnetApp
+        run: dotnet restore
+
+      - name: Run build
+        working-directory: DotnetApp
+        run: dotnet build --no-restore
+
+      - name: Run tests
+        working-directory: DotnetApp
+        run: dotnet test --no-build --verbosity normal
