@@ -1,5 +1,5 @@
 name: Run Tests
-run-name: Running tests for ${{ github.event_name }} on \#${{ github.ref_name }}
+run-name: 'Running tests for ${{ github.event_name }} on #${{ github.ref_name }}'
 
 on:
   pull_request:
