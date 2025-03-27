@@ -1,13 +1,13 @@
 name: Run Tests
-run-name: Running tests for ${{ github.event_name }} on ${{ github.ref_name }}
+run-name: Running tests for ${{ github.event_name }} on \#${{ github.ref_name }}
 
 on:
   pull_request:
     branches:
       - main
-  merge_group:
-    types:
-      - checks_requested
+    paths-ignore:
+      - 'README.md'
+      - '.github/**'
 
 jobs:
   test_dotnet:
@@ -32,7 +32,7 @@ jobs:
 
       - name: Initiating build and test with .NET v${{ steps.setup-dotnet.outputs.dotnet-version }}
         run: |
-          echo 'Initiating build and test with .NET v${{ steps.setup-dotnet.outputs.dotnet-version }}'
+          echo 'Using .NET v${{ steps.setup-dotnet.outputs.dotnet-version }}'
 
       - name: Restore dependencies
         working-directory: DotnetApp
